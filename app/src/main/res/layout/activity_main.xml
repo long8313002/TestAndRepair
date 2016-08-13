@@ -1,0 +1,76 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/textView"
+        android:layout_width="100dp"
+
+        android:background="#000"
+        android:layout_height="100dp" />
+
+    <Button
+        android:onClick="onClick1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button1" />
+
+
+    <LinearLayout
+        android:id="@+id/ll_contair"
+        android:orientation="vertical"
+        android:padding="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:onClick="onClick2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="button2" />
+
+    </LinearLayout>
+
+
+    <Button
+        android:onClick="onClick3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button3" />
+
+    <Button
+        android:onClick="onClick4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button4" />
+
+    <Button
+        android:onClick="onClick5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button5" />
+
+    <Button
+        android:onClick="onClick6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button6" />
+
+    <Button
+        android:onClick="onClick7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button7" />
+
+    <Button
+        android:onClick="onClick8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="button8" />
+
+    <RadioButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
