@@ -67,8 +67,19 @@ public class AndRepairClassLoader extends ClassLoader {
         if (zzClassLoader == null) {
             return null;
         }
+        String finalClassName = className.replaceAll("_CF","");
         try {
             return zzClassLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if(className.equals(finalClassName)){
+            return null;
+        }
+
+        try {
+            return zzClassLoader.loadClass(finalClassName);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

@@ -56,9 +56,10 @@ public class AndRepair {
         if (!isSucess) {
             AndRepairLog.error("加载补丁失败");
         }
+        addDexIntoClassLoader(filePath);
     }
 
-    public void addDexOrJarPatch(String filePatch) {
+    private void addDexIntoClassLoader(String filePatch) {
         ZZClassLoader.init(application);
         andRepairClassLoader.setZZClassLoader(ZZClassLoader.getClassLoader(filePatch));
     }
