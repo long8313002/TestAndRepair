@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -30,37 +32,39 @@ public class AndRepair {
         andRepair.initPatch();
     }
 
-    private void initPatch(){
-        try {
-            PackageManager packageManager = application.getPackageManager();
-            String packageName = application.getPackageName();
-            PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
-            String appversion= packageInfo.versionName;
-            manager=new PatchManager(application);
-            manager.init(appversion);
-            manager.loadPatch();
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void initPatch() {
+        String appversion = AndRepairUtil.getAppVersion(application);
+        manager = new PatchManager(application);
+        manager.init(appversion);
+        manager.loadPatch();
     }
 
-    public void addPatch(String filePath){
-         boolean isSucess=false;
+    public Context getContext() {
+        return application;
+    }
+
+    public void addPatch(String filePath) {
+        boolean isSucess = false;
         try {
-            if(manager != null){
+            if (manager != null) {
                 manager.addPatch(filePath);
                 isSucess = true;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(!isSucess){
+        if (!isSucess) {
             AndRepairLog.error("加载补丁失败");
         }
     }
 
-    public static AndRepair getInstance(){
-        if(andRepair == null){
+    public void addDexOrJarPatch(String filePatch) {
+        ZZClassLoader.init(application);
+        andRepairClassLoader.setZZClassLoader(ZZClassLoader.getClassLoader(filePatch));
+    }
+
+    public static AndRepair getInstance() {
+        if (andRepair == null) {
             throw new RuntimeException("请首先调用init方法");
         }
         return andRepair;
@@ -103,13 +107,14 @@ public class AndRepair {
 
     /**
      * 当本身的类中包含替换的类，需要调用本方法 否则会造成死循环
+     *
      * @param infos
      */
-    public void addReplaceClassSolveLoop(ReplaceClassInfo... infos){
-        if(infos == null||infos.length==0){
+    public void addReplaceClassSolveLoop(ReplaceClassInfo... infos) {
+        if (infos == null || infos.length == 0) {
             return;
         }
-        for (ReplaceClassInfo info:infos){
+        for (ReplaceClassInfo info : infos) {
             AndRepair.getInstance().loadCustomaryClass(info.getClassName());
             replaceClassInfos.add(info);
         }
@@ -117,25 +122,26 @@ public class AndRepair {
 
     /**
      * 替换类
+     *
      * @param infos
      */
     public void addReplaceClass(ReplaceClassInfo... infos) {
-        if(infos == null||infos.length==0){
+        if (infos == null || infos.length == 0) {
             return;
         }
-        for (ReplaceClassInfo info:infos){
+        for (ReplaceClassInfo info : infos) {
             replaceClassInfos.add(info);
         }
     }
 
     public void addReplaceClass(List<ReplaceClassInfo> infos) {
-        if(infos == null||infos.size()==0){
+        if (infos == null || infos.size() == 0) {
             return;
         }
         replaceClassInfos.addAll(infos);
     }
 
-    public Class loadCustomaryClass(String className){
+    public Class loadCustomaryClass(String className) {
         return andRepairClassLoader.loadCustomaryClass(className);
     }
 

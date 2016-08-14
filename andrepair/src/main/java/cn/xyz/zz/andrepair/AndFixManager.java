@@ -74,9 +74,9 @@ public class AndFixManager {
             return;
         }
 
-        if (!mSecurityChecker.verifyApk(file)) {// security check fail
-            return;
-        }
+//        if (!mSecurityChecker.verifyApk(file)) {// security check fail
+//            return;
+//        }
 
         try {
             File optfile = new File(mOptDir, file.getName());
@@ -138,7 +138,8 @@ public class AndFixManager {
             AndRepair.getInstance().addReplaceClass(new ReplaceClassInfo(clzName, clazz));
             return;
         }
-        AndRepair.getInstance().addReplaceClass(new ReplaceClassInfo(clazz.getName(), clazz));
+        String className = clazz.getName().replace("_CF","");
+        AndRepair.getInstance().addReplaceClass(new ReplaceClassInfo(className, clazz));
     }
 
 

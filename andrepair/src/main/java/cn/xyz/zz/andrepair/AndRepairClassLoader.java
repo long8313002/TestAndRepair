@@ -11,6 +11,11 @@ public class AndRepairClassLoader extends ClassLoader {
     private final ClassLoader userClassLoader;
     private final List<ReplaceClassInfo> replaceClassInfos;
     private boolean needLoadRepairClass = true;
+    private ZZClassLoader zzClassLoader;
+
+    public void setZZClassLoader(ZZClassLoader zzClassLoader) {
+        this.zzClassLoader = zzClassLoader;
+    }
 
     public AndRepairClassLoader(ClassLoader parentLoader, ClassLoader userClassLoader, List<ReplaceClassInfo> replaceClassInfos) {
         super(parentLoader);
@@ -21,7 +26,8 @@ public class AndRepairClassLoader extends ClassLoader {
     @Override
     protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException {
         Class<?> repairClass = null;
-        if (needLoadRepairClass) {
+        boolean repairPager = className.contains("cn.xyz.zz.andrepair");
+        if (needLoadRepairClass&&!repairPager) {
             repairClass = loadRepairClass(className, resolve);
         }
         return repairClass == null ? super.loadClass(className, resolve) : repairClass;
@@ -58,6 +64,14 @@ public class AndRepairClassLoader extends ClassLoader {
     }
 
     private Class<?> getClassFromDexClassLoader(String className) throws ClassNotFoundException {
+        if (zzClassLoader == null) {
+            return null;
+        }
+        try {
+            return zzClassLoader.loadClass(className);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

@@ -23,7 +23,7 @@ public class PatchManager {
 	private static final String SP_VERSION = "version";
 
 	private final Context mContext;
-	private final AndFixManager mAndFixManager;
+	private AndFixManager mAndFixManager;
 	private final File mPatchDir;
 	private final SortedSet<Patch> mPatchs;
 	private final Map<String, ClassLoader> mLoaders;
@@ -34,6 +34,10 @@ public class PatchManager {
 		mPatchDir = new File(mContext.getFilesDir(), DIR);
 		mPatchs = new ConcurrentSkipListSet<Patch>();
 		mLoaders = new ConcurrentHashMap<String, ClassLoader>();
+	}
+
+	public AndFixManager getAndFixManager(){
+		return mAndFixManager;
 	}
 
 	public void init(String appVersion) {
