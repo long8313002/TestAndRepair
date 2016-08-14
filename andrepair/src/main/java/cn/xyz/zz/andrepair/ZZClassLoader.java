@@ -13,10 +13,13 @@ import dalvik.system.DexClassLoader;
 public class ZZClassLoader extends DexClassLoader {
 
     private static final HashMap<String, ZZClassLoader> mPatchinClassLoaders = new HashMap<>();
-    private static  Context context ;
-    public static File dexOutputDir ;
+    private static Context context;
+    public static File dexOutputDir;
 
-    public static void init(Context context){
+    public static void init(Context context) {
+        if (ZZClassLoader.context != null) {
+            return;
+        }
         ZZClassLoader.context = context;
         dexOutputDir = context.getDir("patch", Context.MODE_PRIVATE);
     }
@@ -25,18 +28,18 @@ public class ZZClassLoader extends DexClassLoader {
         super(dexPath, optimizedDirectory, libraryPath, parent);
     }
 
-    public static void clearPluginClassLoaders(){
+    public static void clearPluginClassLoaders() {
         mPatchinClassLoaders.clear();
         deleteFileList(dexOutputDir);
     }
 
     private static void deleteFileList(File file) {
-        if(file==null){
+        if (file == null) {
             return;
         }
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-            for (File f:files){
+            for (File f : files) {
                 deleteFileList(f);
             }
         } else {
@@ -51,20 +54,20 @@ public class ZZClassLoader extends DexClassLoader {
             return dLClassLoader;
 
         ClassLoader parentLoader = context.getClassLoader();
-        while (parentLoader!=null){
+        while (parentLoader != null) {
             ClassLoader parent = parentLoader.getParent();
-            if(parent==null){
+            if (parent == null) {
                 break;
             }
             parentLoader = parent;
         }
 
-        if(!new File(dexPath).exists()){
+        if (!new File(dexPath).exists()) {
             return null;
         }
 
         final String dexOutputPath = dexOutputDir.getAbsolutePath();
-        if(!dexOutputDir.exists()){
+        if (!dexOutputDir.exists()) {
             dexOutputDir.mkdir();
         }
         dLClassLoader = new ZZClassLoader(dexPath, dexOutputPath, null, parentLoader);

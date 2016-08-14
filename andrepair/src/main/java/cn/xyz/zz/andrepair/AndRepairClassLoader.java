@@ -1,5 +1,6 @@
 package cn.xyz.zz.andrepair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,10 +12,10 @@ public class AndRepairClassLoader extends ClassLoader {
     private final ClassLoader userClassLoader;
     private final List<ReplaceClassInfo> replaceClassInfos;
     private boolean needLoadRepairClass = true;
-    private ZZClassLoader zzClassLoader;
+    private List<ZZClassLoader> zzClassLoaders = new ArrayList<>();
 
     public void setZZClassLoader(ZZClassLoader zzClassLoader) {
-        this.zzClassLoader = zzClassLoader;
+        this.zzClassLoaders.add(zzClassLoader);
     }
 
     public AndRepairClassLoader(ClassLoader parentLoader, ClassLoader userClassLoader, List<ReplaceClassInfo> replaceClassInfos) {
@@ -64,24 +65,28 @@ public class AndRepairClassLoader extends ClassLoader {
     }
 
     private Class<?> getClassFromDexClassLoader(String className) throws ClassNotFoundException {
-        if (zzClassLoader == null) {
+        if (zzClassLoaders == null||zzClassLoaders.size()==0) {
             return null;
         }
         String finalClassName = className.replaceAll("_CF","");
-        try {
-            return zzClassLoader.loadClass(className);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        for (ZZClassLoader zzClassLoader:zzClassLoaders) {
+            try {
+                return zzClassLoader.loadClass(className);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         if(className.equals(finalClassName)){
             return null;
         }
 
-        try {
-            return zzClassLoader.loadClass(finalClassName);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        for (ZZClassLoader zzClassLoader:zzClassLoaders) {
+            try {
+                return zzClassLoader.loadClass(finalClassName);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

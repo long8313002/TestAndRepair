@@ -3,6 +3,7 @@ package cn.xyz.zz.andrepair;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class PatchManager {
 	private static final String TAG = "PatchManager";
 	private static final String SUFFIX = ".apatch";
 	private static final String DIR = "apatch";
-	private static final String SP_NAME = "_andfix_";
+	private static final String SP_NAME = "_andrepair_";
 	private static final String SP_VERSION = "version";
 
 	private final Context mContext;
@@ -34,10 +35,6 @@ public class PatchManager {
 		mPatchDir = new File(mContext.getFilesDir(), DIR);
 		mPatchs = new ConcurrentSkipListSet<Patch>();
 		mLoaders = new ConcurrentHashMap<String, ClassLoader>();
-	}
-
-	public AndFixManager getAndFixManager(){
-		return mAndFixManager;
 	}
 
 	public void init(String appVersion) {
@@ -126,7 +123,8 @@ public class PatchManager {
 		}
 	}
 
-	public void loadPatch() {
+	public List<String> loadPatch() {
+		List<String> patchPath = new ArrayList<>();
 		mLoaders.put("*", mContext.getClassLoader());// wildcard
 		Set<String> patchNames;
 		List<String> classes;
@@ -136,8 +134,10 @@ public class PatchManager {
 				classes = patch.getClasses(patchName);
 				mAndFixManager.fix(patch.getFile(), mContext.getClassLoader(),
 						classes);
+				patchPath.add(patch.getFile().getAbsolutePath());
 			}
 		}
+		return patchPath;
 	}
 
 	private void loadPatch(Patch patch) {

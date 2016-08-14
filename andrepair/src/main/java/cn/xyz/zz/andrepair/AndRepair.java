@@ -4,11 +4,13 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +38,10 @@ public class AndRepair {
         String appversion = AndRepairUtil.getAppVersion(application);
         manager = new PatchManager(application);
         manager.init(appversion);
-        manager.loadPatch();
+        List<String> paths = manager.loadPatch();
+        for (String path : paths) {
+            addPatch(path);
+        }
     }
 
     public Context getContext() {
@@ -53,10 +58,28 @@ public class AndRepair {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (!isSucess) {
+        if (isSucess) {
+            addDexIntoClassLoader(filePath);
+        }else{
             AndRepairLog.error("加载补丁失败");
         }
-        addDexIntoClassLoader(filePath);
+    }
+
+    public void addPatchFromUrl(String url) {
+        if (TextUtils.isEmpty(url)) {
+            return;
+        }
+        String fileName = URLEncoder.encode(url);
+        File patchFile = new File(getContext().getExternalFilesDir(null),fileName);
+        new HttpDownLoader().downLoad(url, patchFile.getAbsolutePath(), true, new HttpDownLoader.HttpDownLoaderListener() {
+            @Override
+            public void compute(boolean isSucess, String savePath) {
+                if(!isSucess){
+                    return;
+                }
+                addPatch(savePath);
+            }
+        });
     }
 
     private void addDexIntoClassLoader(String filePatch) {

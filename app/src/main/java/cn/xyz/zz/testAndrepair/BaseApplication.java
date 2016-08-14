@@ -25,7 +25,7 @@ public class BaseApplication extends Application {
 //        AndRepair.getInstance().addReplaceClassSolveLoop(new ReplaceClassInfo("android.widget.Button",NewButton.class));
 //        AndRepair.getInstance().addReplaceClassSolveLoop(new ReplaceClassInfo("android.view.View",NewView.class));
 
-        AndRepair.getInstance().addPatch(new File(Environment.getExternalStorageDirectory(), "ppp.apatch").getAbsolutePath());
+//        AndRepair.getInstance().addPatch(new File(Environment.getExternalStorageDirectory(), "ppp.apatch").getAbsolutePath());
     }
 
 }
