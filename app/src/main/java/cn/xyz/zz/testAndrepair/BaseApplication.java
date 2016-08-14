@@ -2,16 +2,9 @@ package cn.xyz.zz.testAndrepair;
 
 import android.app.Application;
 import android.content.Context;
-import android.os.Environment;
-import android.util.Log;
 
-import com.alipay.euler.andfix.patch.PatchManager;
-
-import java.io.File;
 
 import cn.xyz.zz.andrepair.AndRepair;
-import cn.xyz.zz.andrepair.ReplaceClassInfo;
-import cn.xyz.zz.andrepair.ZZClassLoader;
 
 /**
  * Created by Administrator on 2016/8/12.

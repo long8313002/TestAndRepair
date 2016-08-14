@@ -8,9 +8,9 @@ import java.util.HashMap;
 import dalvik.system.DexClassLoader;
 
 /**
- * Created by Administrator on 2016/8/14.
+ * Created by 张政 on 2016/8/14.
  */
-public class ZZClassLoader extends DexClassLoader {
+ class ZZClassLoader extends DexClassLoader {
 
     private static final HashMap<String, ZZClassLoader> mPatchinClassLoaders = new HashMap<>();
     private static Context context;

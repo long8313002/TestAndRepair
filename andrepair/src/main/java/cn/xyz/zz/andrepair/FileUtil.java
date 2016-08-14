@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-public class FileUtil {
+ class FileUtil {
 
 	public static void copyFile(File src, File dest) throws IOException {
 		FileChannel inChannel = null;

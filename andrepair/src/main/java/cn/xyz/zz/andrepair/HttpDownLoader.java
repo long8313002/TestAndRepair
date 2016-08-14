@@ -14,7 +14,7 @@ import java.net.URLConnection;
  * 下载文件的工具类
  * Created by zhangzheng on 2016/1/20.
  */
-public class HttpDownLoader {
+ class HttpDownLoader {
 
     public static final String TAG = "downLoad";
 

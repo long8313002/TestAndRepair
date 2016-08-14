@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 
 import android.annotation.SuppressLint;
 
-public class Compat {
+ class Compat {
 	public static boolean isChecked = false;
 	public static boolean isSupport = false;
 

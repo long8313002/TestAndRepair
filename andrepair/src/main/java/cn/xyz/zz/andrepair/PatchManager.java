@@ -16,7 +16,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 
-public class PatchManager {
+ class PatchManager {
 	private static final String TAG = "PatchManager";
 	private static final String SUFFIX = ".apatch";
 	private static final String DIR = "apatch";

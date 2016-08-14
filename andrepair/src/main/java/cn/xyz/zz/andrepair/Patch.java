@@ -32,7 +32,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-public class Patch implements Comparable<Patch> {
+ class Patch implements Comparable<Patch> {
 	private static final String ENTRY_NAME = "META-INF/PATCH.MF";
 	private static final String CLASSES = "-Classes";
 	private static final String PATCH_CLASSES = "Patch-Classes";

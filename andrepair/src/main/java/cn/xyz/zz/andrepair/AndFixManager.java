@@ -13,7 +13,7 @@ import android.util.Log;
 
 import dalvik.system.DexFile;
 
-public class AndFixManager {
+ class AndFixManager {
     private static final String TAG = "AndFixManager";
     private static final String DIR = "apatch_opt";
     private final Context mContext;
