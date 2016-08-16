@@ -2,6 +2,7 @@ package cn.xyz.zz.andrepair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 自定义的类加载器
@@ -10,7 +11,7 @@ import java.util.List;
 public class AndRepairClassLoader extends ClassLoader {
 
     private final ClassLoader userClassLoader;
-    private final List<ReplaceClassInfo> replaceClassInfos;
+    private final Set<ReplaceClassInfo> replaceClassInfos;
     private boolean needLoadRepairClass = true;
     private List<ZZClassLoader> zzClassLoaders = new ArrayList<>();
 
@@ -18,7 +19,7 @@ public class AndRepairClassLoader extends ClassLoader {
         this.zzClassLoaders.add(zzClassLoader);
     }
 
-    public AndRepairClassLoader(ClassLoader parentLoader, ClassLoader userClassLoader, List<ReplaceClassInfo> replaceClassInfos) {
+    public AndRepairClassLoader(ClassLoader parentLoader, ClassLoader userClassLoader, Set<ReplaceClassInfo> replaceClassInfos) {
         super(parentLoader);
         this.userClassLoader = userClassLoader;
         this.replaceClassInfos = replaceClassInfos;

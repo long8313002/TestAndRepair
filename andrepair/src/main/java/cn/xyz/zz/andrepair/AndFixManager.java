@@ -4,25 +4,26 @@ package cn.xyz.zz.andrepair;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
 import android.content.Context;
+import android.os.Looper;
 import android.util.Log;
 
 
 import dalvik.system.DexFile;
 
- class AndFixManager {
+class AndFixManager {
     private static final String TAG = "AndFixManager";
     private static final String DIR = "apatch_opt";
     private final Context mContext;
-
-
-    private boolean mSupport = false;
+    private boolean mSupport;
 
     private SecurityChecker mSecurityChecker;
     private File mOptDir;
+    private boolean needCheckerSecurity = false;
 
     public AndFixManager(Context context) {
         mContext = context;
@@ -40,11 +41,6 @@ import dalvik.system.DexFile;
         }
     }
 
-    /**
-     * delete optimize file of patch file
-     *
-     * @param file patch file
-     */
     public synchronized void removeOptFile(File file) {
         File optfile = new File(mOptDir, file.getName());
         if (optfile.exists() && !optfile.delete()) {
@@ -52,99 +48,40 @@ import dalvik.system.DexFile;
         }
     }
 
-    /**
-     * fix
-     *
-     * @param patchPath patch path
-     */
-    public synchronized void fix(String patchPath) {
-        fix(new File(patchPath), mContext.getClassLoader(), null);
-    }
+    public List<ReplaceClassInfo> fix(final File file, final List<String> classes) {
 
-    /**
-     * fix
-     *
-     * @param file        patch file
-     * @param classLoader classloader of class that will be fixed
-     * @param classes     classes will be fixed
-     */
-    public synchronized void fix(File file, ClassLoader classLoader,
-                                 List<String> classes) {
+        List<ReplaceClassInfo> infos = new ArrayList<>();
         if (!mSupport) {
-            return;
+            return infos;
         }
 
-//        if (!mSecurityChecker.verifyApk(file)) {// security check fail
-//            return;
-//        }
-
-        try {
-            File optfile = new File(mOptDir, file.getName());
-            boolean saveFingerprint = true;
-            if (optfile.exists()) {
-                if (mSecurityChecker.verifyOpt(optfile)) {
-                    saveFingerprint = false;
-                } else if (!optfile.delete()) {
-                    return;
-                }
-            }
-
-            final DexFile dexFile = DexFile.loadDex(file.getAbsolutePath(),
-                    optfile.getAbsolutePath(), Context.MODE_PRIVATE);
-
-            if (saveFingerprint) {
-                mSecurityChecker.saveOptSig(optfile);
-            }
-
-            ClassLoader patchClassLoader = new ClassLoader(classLoader) {
-                @Override
-                protected Class<?> findClass(String className)
-                        throws ClassNotFoundException {
-                    Class<?> clazz = dexFile.loadClass(className, this);
-                    if (clazz == null
-                            && className.startsWith("cn.xyz.zz.andrepair")) {
-                        return Class.forName(className);
-                    }
-                    if (clazz == null) {
-                        throw new ClassNotFoundException(className);
-                    }
-                    return clazz;
-                }
-            };
-            Enumeration<String> entrys = dexFile.entries();
-            Class<?> clazz = null;
-            while (entrys.hasMoreElements()) {
-                String entry = entrys.nextElement();
-                if (classes != null && !classes.contains(entry)) {
-                    continue;// skip, not need fix
-                }
-                clazz = dexFile.loadClass(entry, patchClassLoader);
-                if (clazz != null) {
-                    fixClass(clazz, classLoader);
-                }
-            }
-        } catch (IOException e) {
-            Log.e(TAG, "pacth", e);
+        if (needCheckerSecurity && !mSecurityChecker.verifyApk(file)) {
+            return infos;
         }
+
+        ZZClassLoader classLoader = ZZClassLoader.getClassLoader(file.getAbsolutePath());
+        if(classLoader==null){
+            return infos;
+        }
+
+        for (String className:classes){
+            try {
+                Class<?> aClass = classLoader.loadClass(className);
+                if(aClass==null){
+                    continue;
+                }
+                infos.add(fixClass(aClass));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return infos;
     }
 
-    private void fixClass(Class<?> clazz, ClassLoader classLoader) {
-        Method[] methods = clazz.getDeclaredMethods();
-        for (Method method : methods) {
-            MethodReplace methodReplace = method.getAnnotation(MethodReplace.class);
-            if (methodReplace == null)
-                continue;
-            String clzName = methodReplace.clazz();
-            AndRepair.getInstance().addReplaceClass(new ReplaceClassInfo(clzName, clazz));
-            return;
-        }
-        String className = clazz.getName().replace("_CF","");
-        AndRepair.getInstance().addReplaceClass(new ReplaceClassInfo(className, clazz));
-    }
-
-
-    private static boolean isEmpty(String string) {
-        return string == null || string.length() <= 0;
+    private ReplaceClassInfo fixClass(Class<?> clazz) {
+        String className = clazz.getName().replace("_CF", "");
+        return new ReplaceClassInfo(className, clazz);
     }
 
 }

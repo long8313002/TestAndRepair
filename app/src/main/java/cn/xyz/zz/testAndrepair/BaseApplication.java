@@ -2,7 +2,10 @@ package cn.xyz.zz.testAndrepair;
 
 import android.app.Application;
 import android.content.Context;
+import android.os.Environment;
 
+
+import java.io.File;
 
 import cn.xyz.zz.andrepair.AndRepair;
 
@@ -18,7 +21,7 @@ public class BaseApplication extends Application {
 //        AndRepair.getInstance().addReplaceClassSolveLoop(new ReplaceClassInfo("android.widget.Button",NewButton.class));
 //        AndRepair.getInstance().addReplaceClassSolveLoop(new ReplaceClassInfo("android.view.View",NewView.class));
 
-//        AndRepair.getInstance().addPatch(new File(Environment.getExternalStorageDirectory(), "ppp.apatch").getAbsolutePath());
+        AndRepair.getInstance().addPatch(new File(Environment.getExternalStorageDirectory(), "ccc.apatch").getAbsolutePath());
     }
 
 }

@@ -15,6 +15,20 @@ public class ReplaceClassInfo {
         this.replaceClass = replaceClass;
     }
 
+    @Override
+    public int hashCode() {
+        return replaceClass.hashCode()+needReplaceClassName.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof ReplaceClassInfo)){
+            return false;
+        }
+        return needReplaceClassName.equals(((ReplaceClassInfo) o).needReplaceClassName)
+                &&replaceClass==((ReplaceClassInfo) o).replaceClass;
+    }
+
     public String getClassName(){
         return needReplaceClassName;
     }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
+import android.util.ArraySet;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,7 +13,10 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Created by 张政 on 2016/8/13.
@@ -22,11 +26,12 @@ public class AndRepair {
     private static AndRepair andRepair;
 
     private AndRepairClassLoader andRepairClassLoader;
-    private List<ReplaceClassInfo> replaceClassInfos = new ArrayList<>();
+    private Set<ReplaceClassInfo> replaceClassInfos = new LinkedHashSet<>();
     private Application application;
     private PatchManager manager;
 
     public static void init(Application application) {
+        ZZClassLoader.init(application);
         if (andRepair != null) {
             return;
         }
@@ -38,10 +43,7 @@ public class AndRepair {
         String appversion = AndRepairUtil.getAppVersion(application);
         manager = new PatchManager(application);
         manager.init(appversion);
-        List<String> paths = manager.loadPatch();
-        for (String path : paths) {
-            addPatch(path);
-        }
+        replaceClassInfos.addAll(manager.loadPatch());
     }
 
     public Context getContext() {
@@ -49,20 +51,8 @@ public class AndRepair {
     }
 
     public void addPatch(String filePath) {
-        boolean isSucess = false;
-        try {
-            if (manager != null) {
-                manager.addPatch(filePath);
-                isSucess = true;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (isSucess) {
-            addDexIntoClassLoader(filePath);
-        }else{
-            AndRepairLog.error("加载补丁失败");
-        }
+        List<ReplaceClassInfo> infos = manager.addPatch(filePath);
+        replaceClassInfos.addAll(infos);
     }
 
     public void addPatchFromUrl(String url) {
@@ -70,11 +60,11 @@ public class AndRepair {
             return;
         }
         String fileName = URLEncoder.encode(url);
-        File patchFile = new File(getContext().getExternalFilesDir(null),fileName);
+        File patchFile = new File(getContext().getExternalFilesDir(null), fileName);
         new HttpDownLoader().downLoad(url, patchFile.getAbsolutePath(), true, new HttpDownLoader.HttpDownLoaderListener() {
             @Override
             public void compute(boolean isSucess, String savePath) {
-                if(!isSucess){
+                if (!isSucess) {
                     return;
                 }
                 addPatch(savePath);
@@ -82,14 +72,9 @@ public class AndRepair {
         });
     }
 
-    private void addDexIntoClassLoader(String filePatch) {
-        ZZClassLoader.init(application);
-        andRepairClassLoader.setZZClassLoader(ZZClassLoader.getClassLoader(filePatch));
-    }
-
     public static AndRepair getInstance() {
         if (andRepair == null) {
-            throw new RuntimeException("请首先调用init方法");
+            throw new RuntimeException("need to initialize");
         }
         return andRepair;
     }
@@ -99,7 +84,7 @@ public class AndRepair {
         try {
             andRepairClassLoader = replaceClassLoader(application);
         } catch (Exception e) {
-            AndRepairLog.error("热修复启动失败");
+            AndRepairLog.error("andrepair error");
         }
     }
 
@@ -167,6 +152,10 @@ public class AndRepair {
 
     public Class loadCustomaryClass(String className) {
         return andRepairClassLoader.loadCustomaryClass(className);
+    }
+
+    public void removeAllPatch() {
+        manager.removeAllPatch();
     }
 
     /**

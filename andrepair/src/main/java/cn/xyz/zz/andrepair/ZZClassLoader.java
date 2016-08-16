@@ -54,13 +54,6 @@ import dalvik.system.DexClassLoader;
             return dLClassLoader;
 
         ClassLoader parentLoader = context.getClassLoader();
-        while (parentLoader != null) {
-            ClassLoader parent = parentLoader.getParent();
-            if (parent == null) {
-                break;
-            }
-            parentLoader = parent;
-        }
 
         if (!new File(dexPath).exists()) {
             return null;

@@ -4,6 +4,13 @@ android {
     compileSdkVersion 23
     buildToolsVersion "24.0.1"
 
+    android {
+        lintOptions {
+            abortOnError false
+        }
+    }
+
+
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
@@ -17,6 +24,18 @@ android {
         }
     }
 }
+
+task makeJar1(type: Jar) {
+    delete 'build/libs/andRepair.jar'
+    baseName 'andRepair'
+    from('build/intermediates/classes/release')
+    exclude('android/',  'BuildConfig.class', 'R.class')
+    exclude {
+        it.name.startsWith('R$');
+    }
+}
+
+makeJar1.dependsOn(build)
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
