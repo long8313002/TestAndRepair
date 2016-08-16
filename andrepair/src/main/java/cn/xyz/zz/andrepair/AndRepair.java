@@ -164,4 +164,8 @@ public class AndRepair {
     public void closeAndRepairLog() {
         AndRepairLog.closeLog();
     }
+
+    public Set<ReplaceClassInfo> getReplaceClassInfos(){
+        return replaceClassInfos;
+    }
 }
