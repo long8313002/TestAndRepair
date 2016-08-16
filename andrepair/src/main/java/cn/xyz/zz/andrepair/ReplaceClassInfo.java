@@ -17,7 +17,7 @@ public class ReplaceClassInfo {
 
     @Override
     public int hashCode() {
-        return replaceClass.hashCode()+needReplaceClassName.hashCode();
+        return needReplaceClassName.hashCode();
     }
 
     @Override
@@ -25,8 +25,7 @@ public class ReplaceClassInfo {
         if(!(o instanceof ReplaceClassInfo)){
             return false;
         }
-        return needReplaceClassName.equals(((ReplaceClassInfo) o).needReplaceClassName)
-                &&replaceClass==((ReplaceClassInfo) o).replaceClass;
+        return needReplaceClassName.equals(((ReplaceClassInfo) o).needReplaceClassName);
     }
 
     public String getClassName(){
