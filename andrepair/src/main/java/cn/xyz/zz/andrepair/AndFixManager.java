@@ -1,19 +1,12 @@
 
 package cn.xyz.zz.andrepair;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-
 import android.content.Context;
-import android.os.Looper;
 import android.util.Log;
 
-
-import dalvik.system.DexFile;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 class AndFixManager {
     private static final String TAG = "AndFixManager";

@@ -19,45 +19,43 @@ package cn.xyz.zz.andrepair;
 
 import java.lang.reflect.Method;
 
-import android.annotation.SuppressLint;
+class Compat {
+   public static boolean isChecked = false;
+   public static boolean isSupport = false;
 
- class Compat {
-	public static boolean isChecked = false;
-	public static boolean isSupport = false;
+   public static synchronized boolean isSupport() {
+       return true;
+   }
 
-	public static synchronized boolean isSupport() {
-		return true;
-	}
+   private static boolean isYunOS() {
+       String version = null;
+       String vmName = null;
+       try {
+           Method m = Class.forName("android.os.SystemProperties").getMethod(
+                   "get", String.class);
+           version = (String) m.invoke(null, "ro.yunos.version");
+           vmName = (String) m.invoke(null, "java.vm.name");
+       } catch (Exception e) {
+           // nothing todo
+       }
+       if ((vmName != null && vmName.toLowerCase().contains("lemur"))
+               || (version != null && version.trim().length() > 0)) {
+           return true;
+       } else {
+           return false;
+       }
+   }
 
-	private static boolean isYunOS() {
-		String version = null;
-		String vmName = null;
-		try {
-			Method m = Class.forName("android.os.SystemProperties").getMethod(
-					"get", String.class);
-			version = (String) m.invoke(null, "ro.yunos.version");
-			vmName = (String) m.invoke(null, "java.vm.name");
-		} catch (Exception e) {
-			// nothing todo
-		}
-		if ((vmName != null && vmName.toLowerCase().contains("lemur"))
-				|| (version != null && version.trim().length() > 0)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+   // from android 2.3 to android 6.0
+   private static boolean isSupportSDKVersion() {
+       if (android.os.Build.VERSION.SDK_INT >= 8
+               && android.os.Build.VERSION.SDK_INT <= 23) {
+           return true;
+       }
+       return false;
+   }
 
-	// from android 2.3 to android 6.0
-	private static boolean isSupportSDKVersion() {
-		if (android.os.Build.VERSION.SDK_INT >= 8
-				&& android.os.Build.VERSION.SDK_INT <= 23) {
-			return true;
-		}
-		return false;
-	}
-
-	private static boolean inBlackList() {
-		return false;
-	}
+   private static boolean inBlackList() {
+       return false;
+   }
 }

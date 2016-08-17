@@ -27,21 +27,28 @@ public class MainActivity extends Activity implements View.OnClickListener{
         Button bt4 = (Button) findViewById(R.id.bt4);
         Button bt5 = (Button) findViewById(R.id.bt5);
 
+        bt5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toast("onClick5");
+            }
+        });
+
         bt1.setOnClickListener(this);
         bt2.setOnClickListener(this);
         bt3.setOnClickListener(this);
         bt4.setOnClickListener(this);
-        bt5.setOnClickListener(this);
+//        bt5.setOnClickListener(this);
     }
 
     public void onClick1(View view){
         Log.i("point","onClick1");
-//        toast("onClick1");
+        toast("onClick1");
     }
 
     public void onClick2(View view){
         Log.i("point", "onClick2");
-//        toast("onClick2");
+        toast("onClick2");
     }
 
     public void onClick3(View view){

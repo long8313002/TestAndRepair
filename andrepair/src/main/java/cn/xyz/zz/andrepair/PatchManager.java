@@ -1,19 +1,16 @@
 package cn.xyz.zz.andrepair;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
 
 class PatchManager {
     private static final String TAG = "PatchManager";
@@ -25,14 +22,14 @@ class PatchManager {
     private final Context mContext;
     private AndFixManager mAndFixManager;
     private final File mPatchDir;
-    private final SortedSet<Patch> mPatchs;
+    private final List<Patch> mPatchs;
     private final Map<String, ClassLoader> mLoaders;
 
     public PatchManager(Context context) {
         mContext = context;
         mAndFixManager = new AndFixManager(mContext);
         mPatchDir = new File(mContext.getFilesDir(), DIR);
-        mPatchs = new ConcurrentSkipListSet<>();
+        mPatchs = new ArrayList<>();
         mLoaders = new ConcurrentHashMap<>();
     }
 
@@ -49,7 +46,7 @@ class PatchManager {
         String ver = sp.getString(SP_VERSION, null);
         if (ver == null || !ver.equalsIgnoreCase(appVersion)) {
             cleanPatch();
-            sp.edit().putString(SP_VERSION, appVersion).apply();
+            sp.edit().putString(SP_VERSION, appVersion).commit();
         } else {
             initPatchs();
         }
@@ -110,7 +107,7 @@ class PatchManager {
         cleanPatch();
         SharedPreferences sp = mContext.getSharedPreferences(SP_NAME,
                 Context.MODE_PRIVATE);
-        sp.edit().clear().apply();
+        sp.edit().clear().commit();
     }
 
     public List<ReplaceClassInfo> loadPatch() {

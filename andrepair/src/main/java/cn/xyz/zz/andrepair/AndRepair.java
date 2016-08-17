@@ -2,21 +2,15 @@ package cn.xyz.zz.andrepair;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.text.TextUtils;
-import android.util.ArraySet;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Created by 张政 on 2016/8/13.
@@ -31,6 +25,7 @@ public class AndRepair {
     private PatchManager manager;
 
     public static void init(Application application) {
+        initLoadClass(Class.class,Set.class,LinkedHashSet.class,Iterator.class,List.class);
         ZZClassLoader.init(application);
         if (andRepair != null) {
             return;
@@ -38,6 +33,8 @@ public class AndRepair {
         andRepair = new AndRepair(application);
         andRepair.initPatch();
     }
+
+    private static void initLoadClass(Class... clazz){}
 
     private void initPatch() {
         String appversion = AndRepairUtil.getAppVersion(application);

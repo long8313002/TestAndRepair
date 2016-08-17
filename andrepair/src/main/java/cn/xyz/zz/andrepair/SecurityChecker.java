@@ -17,6 +17,15 @@
 
 package cn.xyz.zz.andrepair;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.text.TextUtils;
+import android.util.Log;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,15 +42,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import javax.security.auth.x500.X500Principal;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.text.TextUtils;
-import android.util.Log;
 
 public class SecurityChecker {
 	private static final String TAG = "AndRepair";
