@@ -55,8 +55,9 @@ class AndFixManager {
         ZZClassLoader classLoader = ZZClassLoader.getClassLoader(file.getAbsolutePath());
         if(classLoader==null){
             return infos;
+        }else{
+            classLoader.setClassnames(classes);
         }
-
         for (String className:classes){
             try {
                 Class<?> aClass = classLoader.loadClass(className);

@@ -31,7 +31,6 @@ public class AndRepair {
             return;
         }
         andRepair = new AndRepair(application);
-        andRepair.addReplaceClass(new ReplaceClassInfo("cn.jiajixin.nuwa.Hack",Class.class));
         andRepair.initPatch();
     }
 

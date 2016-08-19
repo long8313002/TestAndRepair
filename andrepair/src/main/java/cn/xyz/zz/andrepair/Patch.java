@@ -17,15 +17,9 @@
 
 package cn.xyz.zz.andrepair;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 class Patch  {
    private final File mFile;
@@ -37,22 +31,8 @@ class Patch  {
    }
 
    private void init() throws IOException {
-       JarFile jarFile = new JarFile(mFile);
-       ZipEntry entry = jarFile.getEntry("fixClassNames.txt");
-       InputStream in = jarFile.getInputStream(entry);
-       classNames = getClassNames(in);
+       classNames = AndRepairUtil.getDexClassNames(mFile);
    }
-
-    public List<String> getClassNames(InputStream in) throws IOException {
-        InputStreamReader reader = new InputStreamReader(in);
-        BufferedReader bufferedReader = new BufferedReader(reader);
-        List<String> classNames = new ArrayList<>();
-        String className;
-        while((className = bufferedReader.readLine())!=null){
-            classNames.add(className);
-        }
-        return classNames;
-    }
 
    public File getFile() {
        return mFile;
