@@ -27,9 +27,6 @@ public class AndRepairClassLoader extends ClassLoader {
 
     @Override
     protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException {
-        if(className.equals("cn.jiajixin.nuwa.Hack")){
-            return Class.class;
-        }
         Class<?> repairClass = null;
         boolean repairPager = className.contains("cn.xyz.zz.andrepair");
         if (needLoadRepairClass&&!repairPager) {

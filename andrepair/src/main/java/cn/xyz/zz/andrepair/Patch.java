@@ -31,7 +31,7 @@ class Patch  {
    }
 
    private void init() throws IOException {
-       classNames = AndRepairUtil.getDexClassNames(mFile);
+       classNames = AndRepairUtil.getDexClassNamesFromFile(mFile);
    }
 
    public File getFile() {
