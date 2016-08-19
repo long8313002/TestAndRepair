@@ -4,7 +4,9 @@ import android.content.Context;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import dalvik.system.DexClassLoader;
 
@@ -17,6 +19,7 @@ import dalvik.system.DexClassLoader;
     private static Context context;
     public static File dexOutputDir;
     private PrivateClassLoader privayeClassLoader ;
+    private List<String> classnames = new ArrayList<>();
 
     public static void init(Context context) {
         if (ZZClassLoader.context != null) {
@@ -28,7 +31,12 @@ import dalvik.system.DexClassLoader;
 
     protected ZZClassLoader(String dexPath, String optimizedDirectory, String libraryPath, ClassLoader parent) {
         super(dexPath, optimizedDirectory, libraryPath, parent);
-        privayeClassLoader = new PrivateClassLoader(dexPath,optimizedDirectory,libraryPath,getBootClassLoader(),this);
+        privayeClassLoader = new PrivateClassLoader(dexPath,optimizedDirectory,libraryPath,getBootClassLoader(),this,classnames);
+    }
+
+    public void setClassnames(List<String> classnames) {
+        this.classnames.clear();
+        this.classnames.addAll(classnames);
     }
 
     public static void clearPluginClassLoaders() {
@@ -50,11 +58,10 @@ import dalvik.system.DexClassLoader;
         }
     }
 
-
     public static ZZClassLoader getClassLoader(String dexPath) {
-//        ZZClassLoader dLClassLoader = mPatchinClassLoaders.get(dexPath);
-//        if (dLClassLoader != null)
-//            return dLClassLoader;
+        ZZClassLoader dLClassLoader = mPatchinClassLoaders.get(dexPath);
+        if (dLClassLoader != null)
+            return dLClassLoader;
 
         ClassLoader parentLoader = context.getClassLoader();
 
@@ -66,7 +73,7 @@ import dalvik.system.DexClassLoader;
         if (!dexOutputDir.exists()) {
             dexOutputDir.mkdir();
         }
-        ZZClassLoader dLClassLoader = new ZZClassLoader(dexPath, dexOutputPath, null, parentLoader);
+        dLClassLoader = new ZZClassLoader(dexPath, dexOutputPath, null, parentLoader);
         mPatchinClassLoaders.put(dexPath, dLClassLoader);
 
         return dLClassLoader;
@@ -74,39 +81,10 @@ import dalvik.system.DexClassLoader;
 
     @Override
     protected Class<?> loadClass(String className, boolean resolve) throws ClassNotFoundException {
-        if(className.equals("cn.xyz.zz.testAndrepair.MainActivity")){
+        if(classnames.contains(className)){
             return privayeClassLoader.loadClass(className,resolve);
-        }
-        if(className.equals("cn.xyz.zz.testAndrepair.MainActivity$1")){
-            return privayeClassLoader.loadClass(className,resolve);
-        }
-        if(className.equals("cn.jiajixin.nuwa.Hack")){
-            return Class.class;
         }
         return super.loadClass(className,resolve);
-    }
-
-    private void setParent(ClassLoader loader,ClassLoader parent){
-        if(loader.getParent()==parent){
-            return;
-        }
-
-        Field field = null;
-        Class clazz = loader.getClass();
-        while (field == null) {
-            try {
-                field = clazz.getDeclaredField("parent");
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-            clazz = clazz.getSuperclass();
-        }
-        field.setAccessible(true);
-        try {
-            field.set(loader,parent);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
     }
 
     private static ClassLoader getBootClassLoader(){

@@ -49,13 +49,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     public void onClick1(View view){
         Log.i("point","onClick1");
-        toast("onClick1");
+//        toast("onClick1");
 //        new HaHa().say(this);
     }
 
     public void onClick2(View view){
         Log.i("point", "onClick2");
-        toast("onClick2");
+//        toast("onClick2");
     }
 
     public void onClick3(View view){
