@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 class PatchManager {
@@ -113,34 +112,18 @@ class PatchManager {
     public List<ReplaceClassInfo> loadPatch() {
         List<ReplaceClassInfo> infos = new ArrayList<>();
         mLoaders.put("*", mContext.getClassLoader());// wildcard
-        Set<String> patchNames;
         List<String> classes;
         for (Patch patch : mPatchs) {
-            patchNames = patch.getPatchNames();
-            for (String patchName : patchNames) {
-                classes = patch.getClasses(patchName);
-                infos.addAll(mAndFixManager.fix(patch.getFile(), classes));
-            }
+            classes = patch.getClasses();
+            infos.addAll(mAndFixManager.fix(patch.getFile(), classes));
         }
         return infos;
     }
 
     private List<ReplaceClassInfo> loadPatch(Patch patch) {
         List<ReplaceClassInfo> infos = new ArrayList<>();
-        Set<String> patchNames = patch.getPatchNames();
-        ClassLoader cl;
-        List<String> classes;
-        for (String patchName : patchNames) {
-            if (mLoaders.containsKey("*")) {
-                cl = mContext.getClassLoader();
-            } else {
-                cl = mLoaders.get(patchName);
-            }
-            if (cl != null) {
-                classes = patch.getClasses(patchName);
-                infos.addAll(mAndFixManager.fix(patch.getFile(), classes));
-            }
-        }
+        List<String> classesNames = patch.getClasses();
+        infos.addAll(mAndFixManager.fix(patch.getFile(), classesNames));
         return infos;
     }
 

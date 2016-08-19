@@ -17,104 +17,48 @@
 
 package cn.xyz.zz.andrepair;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.jar.Attributes;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
 
-class Patch implements Comparable<Patch> {
-   private static final String ENTRY_NAME = "META-INF/PATCH.MF";
-   private static final String CLASSES = "-Classes";
-   private static final String PATCH_CLASSES = "Patch-Classes";
-   private static final String CREATED_TIME = "Created-Time";
-   private static final String PATCH_NAME = "Patch-Name";
-
+class Patch  {
    private final File mFile;
-   private String mName;
-   private Date mTime;
-   private Map<String, List<String>> mClassesMap;
+   private List<String> classNames;
 
    public Patch(File file) throws IOException {
        mFile = file;
        init();
    }
 
-   @SuppressWarnings("deprecation")
    private void init() throws IOException {
-       JarFile jarFile = null;
-       InputStream inputStream = null;
-       try {
-           jarFile = new JarFile(mFile);
-           JarEntry entry = jarFile.getJarEntry(ENTRY_NAME);
-           inputStream = jarFile.getInputStream(entry);
-           Manifest manifest = new Manifest(inputStream);
-           Attributes main = manifest.getMainAttributes();
-           mName = main.getValue(PATCH_NAME);
-           mTime = new Date(main.getValue(CREATED_TIME));
-
-           mClassesMap = new HashMap<String, List<String>>();
-           Attributes.Name attrName;
-           String name;
-           List<String> strings;
-           for (Iterator<?> it = main.keySet().iterator(); it.hasNext();) {
-               attrName = (Attributes.Name) it.next();
-               name = attrName.toString();
-               if (name.endsWith(CLASSES)) {
-                   strings = Arrays.asList(main.getValue(attrName).split(","));
-                   if (name.equalsIgnoreCase(PATCH_CLASSES)) {
-                       mClassesMap.put(mName, strings);
-                   } else {
-                       mClassesMap.put(
-                               name.trim().substring(0, name.length() - 8),// remove
-                                                                           // "-Classes"
-                               strings);
-                   }
-               }
-           }
-       } finally {
-           if (jarFile != null) {
-               jarFile.close();
-           }
-           if (inputStream != null) {
-               inputStream.close();
-           }
-       }
-
+       JarFile jarFile = new JarFile(mFile);
+       ZipEntry entry = jarFile.getEntry("fixClassNames.txt");
+       InputStream in = jarFile.getInputStream(entry);
+       classNames = getClassNames(in);
    }
 
-   public String getName() {
-       return mName;
-   }
+    public List<String> getClassNames(InputStream in) throws IOException {
+        InputStreamReader reader = new InputStreamReader(in);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        List<String> classNames = new ArrayList<>();
+        String className;
+        while((className = bufferedReader.readLine())!=null){
+            classNames.add(className);
+        }
+        return classNames;
+    }
 
    public File getFile() {
        return mFile;
    }
 
-   public Set<String> getPatchNames() {
-       return mClassesMap.keySet();
+   public List<String> getClasses() {
+       return classNames;
    }
-
-   public List<String> getClasses(String patchName) {
-       return mClassesMap.get(patchName);
-   }
-
-   public Date getTime() {
-       return mTime;
-   }
-
-   @Override
-   public int compareTo(Patch another) {
-       return mTime.compareTo(another.getTime());
-   }
-
 }
