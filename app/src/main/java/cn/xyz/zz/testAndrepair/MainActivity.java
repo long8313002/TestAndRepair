@@ -3,10 +3,15 @@ package cn.xyz.zz.testAndrepair;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.io.File;
+
+import cn.xyz.zz.andrepair.ZZClassLoader;
 
 public class MainActivity extends Activity implements View.OnClickListener{
 
@@ -39,11 +44,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
         bt3.setOnClickListener(this);
         bt4.setOnClickListener(this);
 //        bt5.setOnClickListener(this);
+
     }
 
     public void onClick1(View view){
         Log.i("point","onClick1");
         toast("onClick1");
+//        new HaHa().say(this);
     }
 
     public void onClick2(View view){
